@@ -31,13 +31,13 @@ class WhisperSTTHandler(BaseHandler):
     def setup(
         self,
         model_name="distil-whisper/distil-large-v3",
-        device="cuda",
+        device="cpu",
         torch_dtype="float16",
         compile_mode=None,
         language=None,
         gen_kwargs={},
     ):
-        self.device = device
+        self.device = torch.device(device)
         self.torch_dtype = getattr(torch, torch_dtype)
         self.compile_mode = compile_mode
         self.gen_kwargs = gen_kwargs
@@ -50,7 +50,7 @@ class WhisperSTTHandler(BaseHandler):
         self.model = AutoModelForSpeechSeq2Seq.from_pretrained(
             model_name,
             torch_dtype=self.torch_dtype,
-        ).to(device)
+        ).to(self.device)
 
         # compile
         if self.compile_mode:
